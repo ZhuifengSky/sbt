@@ -1,0 +1,127 @@
+server:
+  address: 127.0.0.1
+  port: 8088
+  servlet:
+    context-path: /sbt
+
+#数据库配置
+spring:
+  application:
+    name: sbt-service
+  datasource:
+    ##数据库连接池
+    type: com.zaxxer.hikari.HikariDataSource
+    ##驱动类
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/sbt?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: 1234
+    ##hikari 配置
+    hikari:
+      ##最小空闲连接数
+     minimum-idle: 5
+     ##空闲连接最大存活时间
+     idle-timeout: 60000
+     ##数据库最大连接数
+     maximum-pool-size: 10
+     ##测试查询sql
+     connection-test-query: select 1
+     ##数据库连接超时时间
+     connection-timeout: 30000
+     ##连接池中最长生命周期
+     max-lifetime: 1800000
+##druid 配置
+druid:
+  type: com.alibaba.druid.pool.DruidDataSource
+  ##驱动类
+  driver-class-name: com.mysql.cj.jdbc.Driver
+  url: jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+  username: root
+  password: EB+i7d9gxwG+hbKo/qfNO3TDzjKWcXmSUJG+N0PpnLx1bJiIY9JTbfiytzVHSZH4fQd7xH6woKN00MCbcN9Drg==
+  publicKey: MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIFnePJ2noLMr3V5Y7c4A2mn8H3Sfw7a6sKvZSBz00hAJjJanfVtHVfKY2KbHLdPpGdj9w2XyQTNQ43F+bG1oWcCAwEAAQ==
+  ##初始化连接数
+  initial-size: 1
+  ##最小连接数
+  min-idle: 3
+  ##最大连接数
+  max-active: 20
+  # 配置获取连接等待超时的时间
+  max-wait: 60000
+  # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+  time-between-eviction-runs-millis: 60000
+  # 配置一个连接在池中最小生存的时间，单位是毫秒
+  min-evictable-idle-time-millis: 300000
+  #用来检测连接是否有效的sql 必须是一个查询语句
+  #mysql中为 select 'x'
+  #oracle中为 select 1 from dual
+  validation-query: select 'x'
+  #建议配置为true，不影响性能，并且保证安全性。申请连接的时候检测，如果空闲时间大于timeBetweenEvictionRunsMillis，执行validationQuery检测连接是否有效。
+  test-while-idle: true
+  #申请连接时会执行validationQuery检测连接是否有效,开启会降低性能,默认为true
+  test-on-borrow: false
+  #归还连接时会执行validationQuery检测连接是否有效,开启会降低性能,默认为true
+  test-on-return: false
+  #打开PSCache，并指定每个连接上PSCache的大小。oracle设为true，mysql设为false。分库分表较多推荐设置为false  配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+  pool-prepared-statements: false
+  max-pool-prepared-statement-per-connection-size: 20
+  #监控统计用的filter:stat 日志用的filter:log4j，slf4j 防御sql注入的filter:wal 防火墙
+  filters: stat,wall,config
+  #合并多个DruidDataSource的监控数据
+  use-global-data-source-stat: true
+  # 通过connectProperties属性可以使用数据库密码加密此处放公钥，密码放加密后的值。加密命令直接运行druid jar包: java -cp druid-1.1.20.jar com.alibaba.druid.filter.config.ConfigTools "password"
+  connect-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000;config.decrypt=true
+  # 配置Filter
+  filter:
+    # 配置StatFilter
+    stat:
+      enabled: true
+      db-type: mysql
+      ##超过时间的sql会打印
+      log-slow-sql: true
+      slow-sql-millis: 2000
+      merge-sql: true
+    # 配置WallFilter
+    wall:
+      enabled: true
+      db-type: mysql
+      config:
+        # 检查是否无where条件
+        delete-allow: false
+        drop-table-allow: false
+        create-table-allow: false
+        alter-table-allow: false
+        truncate-allow: false
+  web-stat-filter:
+    enabled: true
+    # 添加过滤规则
+    url-pattern: /*
+    # 忽略过滤格式
+    exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*'
+    session-stat-enable: false
+  # 配置监控服务器
+  stat-view-servlet:
+    enabled: true
+    #页面数据重置 false 就是无法重置
+    reset-enable: false
+    url-pattern: /druid/*
+    login-username: admin
+    login-password: 123456
+    # 添加IP白名单
+    allow: 127.0.0.1
+    # 添加IP黑名单，当白名单和黑名单重复时，黑名单优先级更高
+    deny: 192.168.1.73
+
+  #模板引擎配置
+  thymeleaf:
+    encoding: UTF-8
+    #suffix: .html  默认后缀
+    #prefix: classpath:/templates/  默认前缀
+mybatis:
+  mapperLocations: classpath:mapper/**/*.xml
+  config-location: classpath:mybatis-config.xml
+  typeAliasesPackage: com.stu.sbt.modules.model
+
+
+logging:
+  config: classpath:log4j2-dev.xml
+
